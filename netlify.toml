@@ -1,0 +1,10 @@
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/models/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+[build.environment]
+  NODE_VERSION = "20"

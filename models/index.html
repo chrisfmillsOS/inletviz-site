@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saanich Inlet Water Quality</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>Saanich Inlet visibility data</h1>
+  </div>
+</header>
+
+<nav class="page-nav" role="tablist">
+  <div class="page-nav-inner">
+    <button class="page-tab active" data-page="emulator" role="tab" aria-selected="true">Turbidity Estimate</button>
+    <button class="page-tab"        data-page="sensor"   role="tab" aria-selected="false">Sensor Data</button>
+    <button class="page-tab"        data-page="model"    role="tab" aria-selected="false">Model Data</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- =====================================================================
+       EMULATOR PAGE (default)
+       ===================================================================== -->
+  <div id="page-emulator" class="page">
+
+    <p class="page-intro">Shows how cloudy the water is (turbidity) at five sites in Saanich Inlet, estimated using UBC ocean model data.</p>
+
+    <div class="site-pills" id="emulator-site-selector">
+      <button class="site-pill active" data-site="mackenzie_bight">MacKenzie Bight</button>
+      <button class="site-pill" data-site="willis_point">Willis Point</button>
+      <button class="site-pill" data-site="henderson_point">Henderson Point</button>
+      <button class="site-pill" data-site="yarrow_point">Yarrow Point</button>
+      <button class="site-pill" data-site="deep_cove">Deep Cove</button>
+    </div>
+
+    <section class="section-block" id="emulator-block">
+      <div class="section-header">
+        <span class="section-name">Estimated Turbidity</span>
+        <span class="section-unit">NTU</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-target="emulator-recent-panel">Last 14 Days</button>
+        <button class="tab-btn"        data-target="emulator-history-panel">Full History</button>
+        <button class="tab-btn"        data-target="emulator-trend-panel">Trend</button>
+      </div>
+
+      <div id="emulator-recent-panel" data-tab>
+        <div class="chart-wrap tall" id="chart-emulator-recent"></div>
+        <p class="chart-note">Higher values = cloudier water = worse visibility. Summer surface blooms and Fraser River sediment both push turbidity up; winter is typically clearest.</p>
+      </div>
+      <div id="emulator-history-panel" data-tab hidden>
+        <div class="chart-wrap tall" id="chart-emulator-history"></div>
+        <p class="chart-note">Full estimated turbidity record. Extends before the physical sensor was deployed because it's driven by model data rather than direct measurements.</p>
+      </div>
+      <div id="emulator-trend-panel" data-tab hidden>
+        <div class="chart-wrap" id="chart-emulator-trend"></div>
+        <p class="chart-note">Daily median estimated turbidity at three depth ranges — surface (0–10 m), mid-water (20–40 m), and near-bottom (40–50 m).</p>
+      </div>
+    </section>
+
+    <details class="model-details">
+      <summary>Model details</summary>
+      <div class="model-details-body">
+        <p>This is a turbidity proxy, not a direct measurement. It combines two outputs from the <a href="https://salishsea.eos.ubc.ca" target="_blank">UBC SalishSeaCast</a> ocean model: phytoplankton biomass (algae in the water column) and a Fraser River tracer (sediment-laden river water entering the inlet). Each is scaled so the combined estimate matches the long-run average NTU measured by the Ocean Networks Canada sensor at Yarrow Point.</p>
+
+        <div id="emulator-metrics" class="emulator-metrics" hidden></div>
+      </div>
+    </details>
+
+  </div><!-- /page-emulator -->
+
+
+  <!-- =====================================================================
+       SENSOR DATA PAGE
+       ===================================================================== -->
+  <div id="page-sensor" class="page" hidden>
+
+    <p class="page-intro">Direct measurements from the Ocean Networks Canada sensor at Yarrow Point — the most accurate data we have for that one location.</p>
+
+    <!-- Turbidity -->
+    <section class="section-block" id="turb-section">
+      <div class="section-header">
+        <span class="section-name">Turbidity</span>
+        <span class="section-unit">NTU</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-target="turb-recent-panel">Last 14 Days</button>
+        <button class="tab-btn"        data-target="turb-history-panel">Full History</button>
+        <button class="tab-btn"        data-target="turb-trend-panel">Trend</button>
+      </div>
+
+      <div id="turb-recent-panel" data-tab>
+        <div class="outage-banner" id="turb-outage-banner" hidden></div>
+        <div class="chart-wrap tall" id="chart-turb-recent"></div>
+        <p class="chart-note">Turbidity measures how cloudy the water is (NTU — higher = murkier = worse visibility). Surface spikes usually follow rain or blooms; near-bottom rises indicate sediment stirred up from the seafloor. Grey bands are periods with no profiler data — values there are interpolated estimates.</p>
+      </div>
+
+      <div id="turb-history-panel" data-tab hidden>
+        <div class="chart-wrap tall" id="chart-turb-history"></div>
+        <p class="chart-note">Full turbidity record from the Yarrow Point profiling platform. Each cell is the median of all readings in a 4-hour × 1 m depth window. Gaps appear when the profiler was offline or being serviced.</p>
+      </div>
+
+      <div id="turb-trend-panel" data-tab hidden>
+        <div class="chart-wrap" id="chart-turb-trend"></div>
+        <p class="chart-note">Daily median turbidity at three depth layers. The dotted line is a 30-day rolling average of the surface layer, smoothing out day-to-day variability to show the seasonal pattern.</p>
+      </div>
+    </section>
+
+    <!-- Chlorophyll -->
+    <section class="section-block" id="chl-section">
+      <div class="section-header">
+        <span class="section-name">Chlorophyll-a</span>
+        <span class="section-unit">mg / m³</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-target="chl-recent-panel">Last 14 Days</button>
+        <button class="tab-btn"        data-target="chl-history-panel">Full History</button>
+        <button class="tab-btn"        data-target="chl-trend-panel">Trend</button>
+      </div>
+
+      <div id="chl-recent-panel" data-tab>
+        <div class="outage-banner" id="chl-outage-banner" hidden></div>
+        <div class="chart-wrap tall" id="chart-chl-recent"></div>
+        <p class="chart-note">Chlorophyll-a is the pigment phytoplankton use to photosynthesize — higher values mean more algae in the water. A bright band below the surface (the deep chlorophyll maximum) is common in summer when the water stratifies. Grey bands indicate periods with no sensor data.</p>
+      </div>
+
+      <div id="chl-history-panel" data-tab hidden>
+        <div class="chart-wrap tall" id="chart-chl-history"></div>
+        <p class="chart-note">Full chlorophyll record. Spring and autumn blooms appear as bright green bands in the upper water column; Saanich Inlet's restricted circulation drives a strong seasonal cycle.</p>
+      </div>
+
+      <div id="chl-trend-panel" data-tab hidden>
+        <div class="chart-wrap" id="chart-chl-trend"></div>
+        <p class="chart-note">Daily median chlorophyll at three depth layers. Spring blooms typically appear first at the surface; late-summer stratification pushes the maximum deeper.</p>
+      </div>
+    </section>
+
+    <section class="about-block">
+      <p class="about-title">About this data</p>
+      <p>Measured by the <a href="https://www.oceannetworks.ca" target="_blank">Ocean Networks Canada</a> VENUS profiling platform at Yarrow Point (YPVPP, 48.627°N 123.499°W). The profiler cycles vertically through the water column, sampling turbidity, chlorophyll, temperature and pressure at roughly 1 m resolution every few hours. Each chart cell is the <em>median</em> of all readings in its time–depth bin — median suppresses sensor spikes and biofouling artefacts.</p>
+    </section>
+
+  </div><!-- /page-sensor -->
+
+
+  <!-- =====================================================================
+       MODEL DATA PAGE
+       ===================================================================== -->
+  <div id="page-model" class="page" hidden>
+
+    <p class="page-intro">Raw outputs from the UBC SalishSeaCast ocean model — the underlying data used to generate the turbidity estimate.</p>
+
+    <details class="model-details">
+      <summary>Model details</summary>
+      <div class="model-details-body">
+        <p>UBC SalishSeaCast NEMO ocean model — ~500 m horizontal resolution, hourly output, aggregated to 4-hour Pacific blocks. Color scales are fixed across all five sites so you can compare directly by toggling between them. Data from <a href="https://salishsea.eos.ubc.ca" target="_blank">SalishSeaCast</a> (UBC MOAD group). The Fraser River tracer is a passive scalar that tracks river water; diatoms and flagellates are the model's two phytoplankton functional types. Model output is hourly; displayed here as 4-hour Pacific-time medians at the nearest deep model grid point to each site.</p>
+      </div>
+    </details>
+
+    <!-- Site selector -->
+    <div class="site-pills" id="model-site-selector">
+      <button class="site-pill active" data-site="mackenzie_bight">MacKenzie Bight</button>
+      <button class="site-pill" data-site="willis_point">Willis Point</button>
+      <button class="site-pill" data-site="henderson_point">Henderson Point</button>
+      <button class="site-pill" data-site="yarrow_point">Yarrow Point</button>
+      <button class="site-pill" data-site="deep_cove">Deep Cove</button>
+    </div>
+
+    <!-- Turbidity tracer -->
+    <section class="section-block" id="model-fraser-block">
+      <div class="section-header">
+        <span class="section-name">Fraser River Turbidity Tracer</span>
+        <span class="section-unit" id="model-fraser-unit">NTU</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-target="model-fraser-recent-panel">Last 14 Days</button>
+        <button class="tab-btn"        data-target="model-fraser-history-panel">Full History</button>
+        <button class="tab-btn"        data-target="model-fraser-trend-panel">Trend</button>
+      </div>
+
+      <div id="model-fraser-recent-panel" data-tab>
+        <div class="chart-wrap tall" id="chart-model-fraser-recent"></div>
+        <p class="chart-note">The model tracks Fraser River water — fresh, sediment-laden — as it intrudes into the inlet. Higher values mean more river influence at that depth. Because fresh water floats on salt water, you'll typically see the tracer concentrated near the surface; deep intrusions can happen during mixing events.</p>
+      </div>
+      <div id="model-fraser-history-panel" data-tab hidden>
+        <div class="chart-wrap tall" id="chart-model-fraser-history"></div>
+        <p class="chart-note">Full record from March 2026. Seasonal peaks reflect higher Fraser River discharge in spring and early summer snowmelt. Use the site selector to compare how different parts of the inlet are affected.</p>
+      </div>
+      <div id="model-fraser-trend-panel" data-tab hidden>
+        <div class="chart-wrap" id="chart-model-fraser-trend"></div>
+        <p class="chart-note">Daily median Fraser River tracer at three depth layers. Surface intrusions are typical; mid-water signals indicate deeper mixing or internal waves.</p>
+      </div>
+    </section>
+
+    <!-- Phytoplankton -->
+    <section class="section-block" id="model-phyto-block">
+      <div class="section-header">
+        <span class="section-name">Phytoplankton</span>
+        <span class="section-unit">diatoms + flagellates · mmol / m³</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-target="model-phyto-recent-panel">Last 14 Days</button>
+        <button class="tab-btn"        data-target="model-phyto-history-panel">Full History</button>
+        <button class="tab-btn"        data-target="model-phyto-trend-panel">Trend</button>
+      </div>
+
+      <div id="model-phyto-recent-panel" data-tab>
+        <div class="chart-wrap tall" id="chart-model-phyto-recent"></div>
+        <p class="chart-note">Model-estimated phytoplankton biomass (diatoms + flagellates combined). Compare with the measured chlorophyll on the Sensor Data tab — where they agree, the model is capturing the real bloom dynamics. Where they diverge is where the interesting oceanography happens.</p>
+      </div>
+      <div id="model-phyto-history-panel" data-tab hidden>
+        <div class="chart-wrap tall" id="chart-model-phyto-history"></div>
+        <p class="chart-note">Full phytoplankton model record from March 2026. Spring blooms appear as bright bands in the upper water column, typically earlier at sites closer to the inlet mouth.</p>
+      </div>
+      <div id="model-phyto-trend-panel" data-tab hidden>
+        <div class="chart-wrap" id="chart-model-phyto-trend"></div>
+        <p class="chart-note">Daily median phytoplankton by depth layer. A surface-to-deep progression in timing often reflects the onset of stratification each spring.</p>
+      </div>
+    </section>
+
+  </div><!-- /page-model -->
+
+</main>
+
+<footer>
+  <a href="https://www.oceannetworks.ca" target="_blank">Ocean Networks Canada</a>
+  &nbsp;·&nbsp; <a href="https://salishsea.eos.ubc.ca" target="_blank">SalishSeaCast · UBC MOAD</a>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
