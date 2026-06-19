@@ -37,10 +37,19 @@ const CONFIG = {
 // Colour scales
 // ---------------------------------------------------------------------------
 
+// Fixed zmax=1.5 NTU. Control points map diver experience:
+//   0.00 → 0 NTU:  great viz (clear blue)
+//   0.13 → 0.2 NTU: very good
+//   0.27 → 0.4 NTU: meh / ~3–5 m viz (yellow — caution)
+//   0.47 → 0.7 NTU: poor (orange)
+//   0.67 → 1.0 NTU: awful / ≤1 m viz (dark red)
+//   1.00 → 1.5 NTU: beyond awful (saturated dark)
 const TURB_COLORSCALE = [
-  [0.0, "#f0f7ff"], [0.15, "#b8d9f0"], [0.35, "#5ba8d8"],
-  [0.6,  "#1e6fa8"], [0.8,  "#d4700a"], [1.0,  "#8b1a00"],
+  [0.0,  "#cce8ff"], [0.13, "#5aabd8"],
+  [0.27, "#f5d020"], [0.47, "#e87820"],
+  [0.67, "#c81800"], [1.0,  "#400005"],
 ];
+const TURB_ZMAX = 1.5;
 const CHL_COLORSCALE = [
   [0.0, "#f5fff0"], [0.2, "#b8e8a0"], [0.45, "#4caf50"],
   [0.7, "#1b6e20"], [0.9,  "#0a3d10"], [1.0,  "#001a05"],
@@ -220,7 +229,7 @@ function setOutageBanner(bannerId, sparseFraction) {
 // Recent heatmap (sensor data — depth × 4-hour blocks, last 14 days)
 // ---------------------------------------------------------------------------
 
-function buildRecentHeatmap(el, heatmapData, colorscale, unitLabel, bannerId) {
+function buildRecentHeatmap(el, heatmapData, colorscale, unitLabel, bannerId, zmin, zmax) {
   if (!heatmapData || !heatmapData.time_labels || !heatmapData.time_labels.length) {
     showNoData(el.id); return;
   }
@@ -259,7 +268,7 @@ function buildRecentHeatmap(el, heatmapData, colorscale, unitLabel, bannerId) {
   const trace = {
     type: "heatmap",
     x: time_labels, y: depths, z: values,
-    colorscale, zsmooth: false,
+    colorscale, zsmooth: false, zmin, zmax,
     text: hoverText, hovertemplate: "%{text}<extra></extra>",
     colorbar: {
       title: { text: unitLabel, font: { size: 11 } },
@@ -681,12 +690,12 @@ async function init() {
   // ---- Turbidity ----
   buildRecentHeatmap(
     document.getElementById("chart-turb-recent"),
-    RECENT_DATA?.turbidity, TURB_COLORSCALE, "NTU", "turb-outage-banner"
+    RECENT_DATA?.turbidity, TURB_COLORSCALE, "NTU", "turb-outage-banner", 0, TURB_ZMAX
   );
   deferRender("turb-history-panel", () =>
     buildHistoricalHeatmap(
       document.getElementById("chart-turb-history"),
-      TURB_DATA, TURB_COLORSCALE, "NTU"
+      TURB_DATA, TURB_COLORSCALE, "NTU", 0, TURB_ZMAX
     )
   );
   deferRender("turb-trend-panel", () =>
@@ -790,14 +799,14 @@ function renderEmulatorSection(siteKey) {
   if (siteData.recent?.time_labels?.length) {
     buildRecentHeatmapModel(
       document.getElementById("chart-emulator-recent"),
-      siteData.recent, TURB_COLORSCALE, "NTU", 0, null
+      siteData.recent, TURB_COLORSCALE, "NTU", 0, TURB_ZMAX
     );
   } else { showNoData("chart-emulator-recent"); }
 
   deferRender("emulator-history-panel", () =>
     buildHistoricalHeatmap(
       document.getElementById("chart-emulator-history"),
-      dataset, TURB_COLORSCALE, "NTU"
+      dataset, TURB_COLORSCALE, "NTU", 0, TURB_ZMAX
     )
   );
   deferRender("emulator-trend-panel", () =>
