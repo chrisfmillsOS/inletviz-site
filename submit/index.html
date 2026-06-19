@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit a measurement — InletViz</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafb;
+      color: #1a2530;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dde3e9;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    header a {
+      font-size: 0.82rem;
+      color: #0080a0;
+      text-decoration: none;
+    }
+    header a:hover { text-decoration: underline; }
+    header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a2530;
+    }
+    .form-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .form-wrap p {
+      font-size: 0.88rem;
+      color: #6b8090;
+      margin-bottom: 1.5rem;
+      max-width: 52ch;
+      text-align: center;
+      line-height: 1.55;
+    }
+    iframe {
+      width: 100%;
+      max-width: 700px;
+      height: 860px;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    footer {
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.72rem;
+      color: #8aa0b0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/">&larr; InletViz</a>
+    <h1>Submit a measurement</h1>
+  </header>
+  <div class="form-wrap">
+    <p>Dived Saanich Inlet recently? Share your visibility estimate and depth — community observations help build a richer picture of conditions across the inlet.</p>
+    <iframe
+      src="https://docs.google.com/forms/d/e/1FAIpQLSeHlfhdi3xrakRHkgqhmyotsIwKKvB9GfyfO1e2jKGm9t3bhQ/viewform?embedded=true"
+      title="Submit a visibility measurement">
+      Loading form…
+    </iframe>
+  </div>
+  <footer>Saanich Inlet, British Columbia</footer>
+</body>
+</html>
