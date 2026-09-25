@@ -1,7 +1,7 @@
 # inletviz-site
 
 The public website for **InletViz**, which covers water visibility and conditions in Saanich Inlet.
-Netlify deploys it to **https://inletviz.netlify.app** on every push to `main`.
+Netlify deploys it to **https://inletviz.com** (also https://inletviz.netlify.app) on every push to `main`.
 
 It's a static site with no build step. Nobody edits `models/data/` by hand: the
 [saanich-viz](https://github.com/chrisfmillsOS/saanich-viz) pipeline rebuilds it
