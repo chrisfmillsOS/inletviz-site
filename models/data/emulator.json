@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-19T09:41:10.523029+00:00",
-  "model_trained_at": "2026-11-19T09:41:10.523029+00:00",
+  "updated": "2026-11-19T10:05:36.009348+00:00",
+  "model_trained_at": "2026-11-19T10:05:36.009348+00:00",
   "units": "NTU",
   "model_type": "proxy_normalization",
   "proxy_formula": "0.5 \u00d7 phyto_scaled + 0.5 \u00d7 model_turb_scaled",
